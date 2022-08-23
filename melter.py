@@ -71,7 +71,7 @@ if uploaded_file is not None:
 		# Creating a list of column names for the user to choose from
 		static_options = column_rename(original_names)
 		
-		# Creating lists of column names using Streamlits multiselect input widget, remove id columns once selected
+		# Creating lists of column names using Streamlit's multiselect input widget, remove id columns once selected
 		static_column_names = st.multiselect("Please select the ID column names. Likely choices are Beauhurst URL, Company name, and Companies House ID.",static_options)
 		variable_options = variable_rename([x for x in static_options if x not in static_column_names])
 		variable_column_names = st.multiselect("Please select the variable you want to convert from wide to long format. Likely choices are Turnover, Headcount, SIC code, and Postcode.",variable_options)
