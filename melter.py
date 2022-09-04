@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import re
 
+st.set_page_config(page_icon="🫕", page_title="The Melter")
+
 def _max_width_():
 	max_width_str = f"max-width: 1800px;"
 	st.markdown(
@@ -14,8 +16,6 @@ def _max_width_():
 	""",
 		unsafe_allow_html=True,
 	)
-
-st.set_page_config(page_icon="🫕", page_title="The Melter")
 
 st.image(
 	"https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/fondue_1fad5.png",
@@ -90,10 +90,10 @@ if uploaded_file is not None:
 			df_new = pd.wide_to_long(df, stubnames=variable_column_names, i=static_column_names, j="Number")
 			@st.cache
 			def convert_df(df):
-			# IMPORTANT: Cache the conversion to prevent computation on every rerun
+			# Cache the conversion to prevent computation on rerun
 				return df.to_csv().encode('utf-8')
 
-			df =df.dropna()
+			df_new = df_new.dropna()
 			csv = convert_df(df_new)
 
 			st.download_button(
