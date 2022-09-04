@@ -90,10 +90,10 @@ if uploaded_file is not None:
 			df_new = pd.wide_to_long(df, stubnames=variable_column_names, i=static_column_names, j="Number")
 			@st.cache
 			def convert_df(df):
-			# IMPORTANT: Cache the conversion to prevent computation on every rerun
+			# Cache the conversion to prevent computation on rerun
 				return df.to_csv().encode('utf-8')
 
-			df =df.dropna()
+			df_new = df_new.dropna()
 			csv = convert_df(df_new)
 
 			st.download_button(
