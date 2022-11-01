@@ -93,7 +93,7 @@ if uploaded_file is not None:
 			# Cache the conversion to prevent computation on rerun
 				return df.to_csv().encode('utf-8')
 
-			df_new = df_new.dropna()
+			#df_new = df_new.dropna()
 			csv = convert_df(df_new)
 
 			st.download_button(
