@@ -89,13 +89,13 @@ if uploaded_file is not None:
 	if st.button('Make the data long'):
 		try:
 			df_new = pd.wide_to_long(df, stubnames=variable_column_names, i=static_column_names, j="Number")
+			df_new = df_new.drop("Number", axis=1)
 			@st.cache
 			def convert_df(df):
 			# Cache the conversion to prevent computation on rerun
 				return df.to_csv().encode('utf-8')
 
 			df_new = df_new.dropna()
-			df_new = df_new.drop("Number", axis=1)
 			csv = convert_df(df_new)
 
 			st.download_button(
