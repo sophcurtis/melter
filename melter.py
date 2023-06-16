@@ -38,8 +38,8 @@ def column_rename(original_names):
 		new_names[i] = new_names[i].replace(" (2007) ", "_")
 		new_names[i] = new_names[i].replace("Head Office Address - Postcode (if UK)", "Head Office Address - Postcode (if UK)1")
 		if bool(re.search(r'\d', new_names[i])) == True:
-			digit_position = re.search(r"\d", new_names[i])
-			digit_str = new_names[i][digit_position.span()[0]:digit_position.span()[0]+1].strip()
+			digit_position = re.search(r"\d+", new_names[i]) # match one or more digits
+			digit_str = new_names[i][digit_position.start():digit_position.end()].strip() # get full matched digit string
 			new_names[i] = new_names[i].replace(digit_str, "")
 			new_names[i] = new_names[i]+str(digit_str)
 			new_names[i] = new_names[i].replace(" - ", "_")
@@ -49,6 +49,7 @@ def column_rename(original_names):
 			new_names[i] = new_names[i].replace(" - ", "_")
 			new_names[i] = new_names[i].replace(" ", "_")
 	return new_names
+
 
 
 def variable_rename(new_names):
@@ -93,7 +94,7 @@ if uploaded_file is not None:
 			# Cache the conversion to prevent computation on rerun
 				return df.to_csv().encode('utf-8')
 
-			#df_new = df_new.dropna()
+			df_new = df_new.dropna()
 			csv = convert_df(df_new)
 
 			st.download_button(
