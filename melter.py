@@ -77,9 +77,9 @@ if uploaded_file is not None:
 	static_options = column_rename(original_names)
 
 	# Creating lists of column names using Streamlit's multiselect input widget, remove id columns once selected
-	static_column_names = st.multiselect("Please select the ID column names. Likely choices are Beauhurst URL, Company name, and Companies House ID.",static_options)
+	static_column_names = st.multiselect("Please select the ID column names. This is information that you'd like associated with each row instance. Some likely choices are Beauhurst URL, company name, and Companies House ID.",static_options)
 	variable_options = variable_rename([x for x in static_options if x not in static_column_names])
-	variable_column_names = st.multiselect("Please select the variable you want to convert from wide to long format. Likely choices are Turnover, Headcount, SIC code, and Postcode.",variable_options)
+	variable_column_names = st.multiselect("Please select the variable you want to convert from wide to long format. This is data that is stored in several columns that you'd like as a unique row instance. Some likely choices are turnover, headcount, investor info, SIC code, and postcode.",variable_options)
 
 	# Renaming the dataframe columns with the altered names so that it works in the wide_to_long
 	column_dictionary = dict(zip(original_names, static_options))
@@ -95,7 +95,7 @@ if uploaded_file is not None:
 				return df.to_csv().encode('utf-8')
 
 			df_new = df_new.dropna()
-			csv = convert_df(df_new.drop("Number", axis=1))
+			csv = convert_df(df_new)
 
 			st.download_button(
 				label="Download data as CSV",
@@ -104,7 +104,7 @@ if uploaded_file is not None:
 				mime='text/csv',
 			)
 		except ValueError:
-			st.write("Variable column names can't be identical to a column name. Check all column names exist and are correct.")
+			st.write("Something is not quite right! Please check that you've selected the right columns and try again. If the issue persists, please tell Dan.")
 	else:
 		st.write('')
 
