@@ -24,6 +24,18 @@ st.image(
 
 st.title("The Melter")
 
+st.write("""
+The Melter is designed to streamline the process of reshaping data from a wide format to a long format. It's useful for handling CSV files exported from Beauhurst.
+
+**How it works:**
+1. **Upload a CSV file:** Use the uploader widget to add your Beauhurst exported file.
+2. **Select ID Column Names:** Choose columns that uniquely identify each row (e.g., URLs, company names).
+3. **Select Variable Columns:** Choose the columns that you wish to transform from wide to long format (e.g., turnover, headcount).
+4. **Transform and Download:** Click the button to transform the data and then download the reshaped CSV file.
+
+Ensure your CSV file is correctly formatted for optimal performance. The Variable Columns should have unique sequential numbering, eg: 1,2,3 etc. If you encounter any issues, error messages will guide you through potential fixes.
+""")
+
 
 # Uses Streamlit's uploader widget to allow the user to upload a csv
 uploaded_file = st.file_uploader("Upload a Beauhurst export file (CSV)",type='csv')
@@ -89,7 +101,7 @@ if uploaded_file is not None:
 	if st.button('Make the data long'):
 		try:
 			df_new = pd.wide_to_long(df, stubnames=variable_column_names, i=static_column_names, j="Number")
-			@st.cache
+			@st.cache.data
 			def convert_df(df):
 			# Cache the conversion to prevent computation on rerun
 				return df.to_csv().encode('utf-8')
@@ -103,8 +115,15 @@ if uploaded_file is not None:
 				file_name='new_df.csv',
 				mime='text/csv',
 			)
-		except ValueError:
-			st.write("Something is not quite right! Please check that you've selected the right columns and try again. If the issue persists, please tell Dan.")
+		except ValueError as e:
+    		error_message = str(e)
+    		if "Length of passed values is x, index implies y" in error_message:
+        		st.error("Data Transformation Error: The number of selected columns does not match the expected format. Please review your column selections.")
+    		elif "cannot reindex from a duplicate axis" in error_message:
+        		st.error("Duplicate Column Error: There are duplicate columns in your selection. Please ensure each column is unique.")
+    		else:
+        		st.error(f"Unexpected Error: {error_message}. Please review your selections and try again. If the issue persists, contact Dan for assistance.")
+
 	else:
 		st.write('')
 
