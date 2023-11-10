@@ -116,7 +116,7 @@ if uploaded_file is not None:
 				mime='text/csv',
 			)
 		except ValueError as e:
-    		error_message = str(e)
+			error_message = str(e)
     		if "Length of passed values is x, index implies y" in error_message:
         		st.error("Data Transformation Error: The number of selected columns does not match the expected format. Please review your column selections.")
     		elif "cannot reindex from a duplicate axis" in error_message:
