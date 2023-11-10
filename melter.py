@@ -83,6 +83,17 @@ if uploaded_file is not None:
 
 	# Creates a dataframe from the uploaded file and creates a list of column names
 	df = pd.read_csv(uploaded_file)
+
+	# Check for completely blank columns
+	blank_columns = df.columns[df.isna().all()].tolist()
+	if blank_columns:
+		st.warning(f"The following columns are completely blank and should be removed: {', '.join(blank_columns)}")
+
+	# Check for completely blank rows
+	blank_rows = df.index[df.isna().all(axis=1)].tolist()
+	if blank_rows:
+		st.warning(f"The following rows are completely blank and should be removed: {', '.join(map(str, blank_rows))}")
+
 	original_names = list(df.columns.values)
 
 	# Creating a list of column names for the user to choose from
@@ -101,7 +112,7 @@ if uploaded_file is not None:
 	if st.button('Make the data long'):
 		try:
 			df_new = pd.wide_to_long(df, stubnames=variable_column_names, i=static_column_names, j="Number")
-			@st.cache.data
+			@st.cache_data
 			def convert_df(df):
 			# Cache the conversion to prevent computation on rerun
 				return df.to_csv().encode('utf-8')
