@@ -117,12 +117,12 @@ if uploaded_file is not None:
 			)
 		except ValueError as e:
 			error_message = str(e)
-    		if "Length of passed values is x, index implies y" in error_message:
-        		st.error("Data Transformation Error: The number of selected columns does not match the expected format. Please review your column selections.")
-    		elif "cannot reindex from a duplicate axis" in error_message:
-        		st.error("Duplicate Column Error: There are duplicate columns in your selection. Please ensure each column is unique.")
-    		else:
-        		st.error(f"Unexpected Error: {error_message}. Please review your selections and try again. If the issue persists, contact Dan for assistance.")
+			if "Length of passed values is x, index implies y" in error_message:
+				st.error("Data Transformation Error: The number of selected columns does not match the expected format. Please review your column selections.")
+			elif "cannot reindex from a duplicate axis" in error_message:
+				st.error("Duplicate Column Error: There are duplicate columns in your selection. Please ensure each column is unique.")
+			else:
+				st.error(f"Unexpected Error: {error_message}. Please review your selections and try again. If the issue persists, contact Dan for assistance.")
 
 	else:
 		st.write('')
