@@ -104,20 +104,29 @@ if uploaded_file is not None:
 	variable_options = variable_rename([x for x in static_options if x not in static_column_names])
 	variable_column_names = st.multiselect("Please select the variable you want to convert from wide to long format. This is data that is stored in several columns that you'd like as a unique row instance. Some likely choices are turnover, headcount, investor info, SIC code, and postcode.",variable_options)
 
+	drop_empty_rows = st.radio(
+	    "Drop rows with empty variable columns?",
+	    ("Yes", "No"),
+	    index=1
+	)
+
 	# Renaming the dataframe columns with the altered names so that it works in the wide_to_long
 	column_dictionary = dict(zip(original_names, static_options))
 	df = df.rename(columns=column_dictionary)
 
-	# When the user clicks the button, attempt the wide_to_long using the user inputs
+	# After the radio button for drop_empty_rows
+
 	if st.button('Make the data long'):
 		try:
 			df_new = pd.wide_to_long(df, stubnames=variable_column_names, i=static_column_names, j="Number")
+			
+			if drop_empty_rows == "Yes":
+				df_new = df_new.dropna(subset=variable_column_names)
+			
 			@st.cache_data
 			def convert_df(df):
-			# Cache the conversion to prevent computation on rerun
 				return df.to_csv().encode('utf-8')
 
-			#df_new = df_new.dropna()
 			csv = convert_df(df_new)
 
 			st.download_button(
