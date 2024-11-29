@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import re
-#check
+
 st.set_page_config(page_icon="🫕", page_title="The Melter")
 
 def _max_width_():
@@ -118,7 +118,12 @@ if uploaded_file is not None:
 
 	if st.button('Make the data long'):
 		try:
-			df_new = pd.wide_to_long(df, stubnames=variable_column_names, i=static_column_names, j="Number")
+			# Convert the 'Number' column to string type before wide_to_long
+			df_new = pd.wide_to_long(df, 
+									stubnames=variable_column_names, 
+									i=static_column_names, 
+									j='Number',
+									suffix='\d+')  # Add regex pattern for numeric suffixes
 			
 			if drop_empty_rows == "Yes":
 				df_new = df_new.dropna(subset=variable_column_names)
