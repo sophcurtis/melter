@@ -136,10 +136,11 @@ if uploaded_file is not None:
 			df_melted['Number'] = df_melted['variable'].str.extract('(\d+)$')
 			df_melted['variable'] = df_melted['variable'].str.replace('\d+$', '', regex=True)
 			
-			# Pivot the data to get the final format
+			# Pivot the data to get the final format - using first() instead of mean
 			df_new = df_melted.pivot_table(index=static_column_names + ['Number'],
 										 columns='variable',
-										 values='value').reset_index()
+										 values='value',
+										 aggfunc='first').reset_index()  # Changed from default mean to first
 			
 			if drop_empty_rows == "Yes":
 				df_new = df_new.dropna(subset=variable_column_names)
