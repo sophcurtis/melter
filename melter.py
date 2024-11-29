@@ -122,6 +122,12 @@ if uploaded_file is not None:
 			id_vars = static_column_names
 			value_vars = []
 			
+			# Rename any existing 'Number' column to 'Number_original'
+			if 'Number' in df.columns:
+				df = df.rename(columns={'Number': 'Number_original'})
+				if 'Number' in static_column_names:
+					static_column_names[static_column_names.index('Number')] = 'Number_original'
+			
 			# Get all columns that start with any of the variable_column_names
 			for var in variable_column_names:
 				value_vars.extend([col for col in df.columns if col.startswith(var)])
@@ -136,18 +142,21 @@ if uploaded_file is not None:
 			df_melted['Number'] = df_melted['variable'].str.extract('(\d+)$')
 			df_melted['variable'] = df_melted['variable'].str.replace('\d+$', '', regex=True)
 			
-			# Pivot the data to get the final format - using first() instead of mean
+			# Pivot the data to get the final format
 			df_new = df_melted.pivot_table(index=static_column_names + ['Number'],
 										 columns='variable',
 										 values='value',
-										 aggfunc='first').reset_index()  # Changed from default mean to first
+										 aggfunc='first').reset_index()
 			
 			if drop_empty_rows == "Yes":
 				df_new = df_new.dropna(subset=variable_column_names)
 			
+			# Reset index and ensure no index column in final export
+			df_new = df_new.reset_index(drop=True)
+			
 			@st.cache_data
 			def convert_df(df):
-				return df.to_csv().encode('utf-8')
+				return df.to_csv(index=False).encode('utf-8')
 
 			csv = convert_df(df_new)
 
