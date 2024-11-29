@@ -118,12 +118,28 @@ if uploaded_file is not None:
 
 	if st.button('Make the data long'):
 		try:
-			# Convert the 'Number' column to string type before wide_to_long
-			df_new = pd.wide_to_long(df, 
-									stubnames=variable_column_names, 
-									i=static_column_names, 
-									j='Number',
-									suffix='\d+')  # Add regex pattern for numeric suffixes
+			# First melt the dataframe
+			id_vars = static_column_names
+			value_vars = []
+			
+			# Get all columns that start with any of the variable_column_names
+			for var in variable_column_names:
+				value_vars.extend([col for col in df.columns if col.startswith(var)])
+			
+			# Melt the dataframe
+			df_melted = pd.melt(df, 
+							   id_vars=id_vars,
+							   value_vars=value_vars,
+							   var_name='variable')
+			
+			# Extract the base variable name and number
+			df_melted['Number'] = df_melted['variable'].str.extract('(\d+)$')
+			df_melted['variable'] = df_melted['variable'].str.replace('\d+$', '', regex=True)
+			
+			# Pivot the data to get the final format
+			df_new = df_melted.pivot_table(index=static_column_names + ['Number'],
+										 columns='variable',
+										 values='value').reset_index()
 			
 			if drop_empty_rows == "Yes":
 				df_new = df_new.dropna(subset=variable_column_names)
